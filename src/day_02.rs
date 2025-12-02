@@ -1,8 +1,7 @@
-use std::path::Path;
 use std::fs::File;
 use std::io::Read;
 use std::ops::RangeInclusive;
-
+use std::path::Path;
 
 pub fn read_data(path: &Path) -> Vec<RangeInclusive<u64>> {
     let file = File::open(path).unwrap();
@@ -18,15 +17,13 @@ fn serialize(buf: &str) -> Vec<RangeInclusive<u64>> {
     let re = regex::Regex::new(r"(\d+)-(\d+)").unwrap();
     let mut data = Vec::new();
 
-    for (_, [start, end]) in re.captures_iter(&buf).map(|cap| cap.extract())
-    {
+    for (_, [start, end]) in re.captures_iter(buf).map(|cap| cap.extract()) {
         let range = RangeInclusive::new(start.parse::<u64>().unwrap(), end.parse::<u64>().unwrap());
         data.push(range);
     }
 
     data
 }
-
 
 /// The main logic of part 1 of the puzzle
 /// Checks if an ID's string representation can be decomposed into a twice repeated substring.
@@ -40,7 +37,7 @@ fn predicate_twice_repeating_sequence(id: u64) -> Option<u64> {
     let mid = n_digits / 2;
 
     if (n_digits % 2 == 0) && (digit_string[..mid] == digit_string[mid..]) {
-        Some(digit_string.parse::<u64>().unwrap())
+        Some(id)
     } else {
         None
     }
@@ -62,32 +59,27 @@ fn predicate_k_repeating_sequence(id: u64) -> Option<u64> {
 
     if rotated.contains(&digit_string) {
         Some(id)
-    }
-    else {
+    } else {
         None
     }
 }
 
 /// Helper function to sum the IDs of a given range that satisfy a given predicate.
 fn sum_invalid_ids(range: &RangeInclusive<u64>, predicate: fn(u64) -> Option<u64>) -> u64 {
-    range.clone()
-        .into_iter()
-        .filter_map(predicate)
-        .sum()
+    range.clone().filter_map(predicate).sum()
 }
 
-pub fn solve_part_1(data: &Vec<RangeInclusive<u64>>) -> u64 {
-    data
-        .iter()
-        .fold(0, |acc, range| acc + sum_invalid_ids(range, predicate_twice_repeating_sequence))
+pub fn solve_part_1(data: &[RangeInclusive<u64>]) -> u64 {
+    data.iter().fold(0, |acc, range| {
+        acc + sum_invalid_ids(range, predicate_twice_repeating_sequence)
+    })
 }
 
-pub fn solve_part_2(data: &Vec<RangeInclusive<u64>>) -> u64 {
-    data
-        .iter()
-        .fold(0, |acc, range| acc + sum_invalid_ids(range, predicate_k_repeating_sequence))
+pub fn solve_part_2(data: &[RangeInclusive<u64>]) -> u64 {
+    data.iter().fold(0, |acc, range| {
+        acc + sum_invalid_ids(range, predicate_k_repeating_sequence)
+    })
 }
-
 
 #[cfg(test)]
 mod tests {

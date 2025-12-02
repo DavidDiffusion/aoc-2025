@@ -20,7 +20,7 @@ fn main() {
 
             let solution = day_01::solve_part_2(&data).unwrap();
             println!("DAY 1 - Solution B: {}", solution);
-        },
+        }
         "day_02" => {
             let path = Path::new("data/input_02.txt");
             let data = day_02::read_data(path);
